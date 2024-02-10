@@ -1,10 +1,20 @@
 import User from '../models/user.js';
+import bcrypt from 'bcrypt';
+
 
 // Create a new user
 export const createUser = async (req, res) => {
   try {
-    const newUser = await User.create(req.body);
-    res.status(201).json(newUser);
+    const { password, ...otherFields } = req.body;
+    
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10); 
+    
+    const newUser = await User.create({ password: hashedPassword, ...otherFields });
+
+    // Remove password field from the returned user object
+    const { password: _, ...userWithoutPassword } = newUser.toObject();
+    res.status(201).json(userWithoutPassword);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
