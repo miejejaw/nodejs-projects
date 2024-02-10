@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = 'mongodb://localhost:27017/Contacts'; 
+const db_name = process.env.DB_NAME
+const MONGODB_URI = `mongodb://localhost:27017/${db_name}`; 
 
 async function connectToDatabase() {
   try {
