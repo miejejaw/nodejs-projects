@@ -10,13 +10,13 @@ import {
 const router = express.Router();
 
 // Register a new user
-router.post('/register', createUser);
+router.post('/create', createUser);
 
 // Get all users
-router.get('/users', getAllUsers);
+router.get('/', getAllUsers);
 
 // Get user by ID
-router.get('/user/:id', getUserById);
+router.get('/:id', getUserById);
 
 // Update user
 router.put('/update', updateUserById);

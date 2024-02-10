@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import User from '../models/user.js';
+import dotenv from 'dotenv';
 
+dotenv.config();
 const secretKey = process.env.SECRET_KEY;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
