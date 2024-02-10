@@ -1,24 +1,30 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import connectDB from './src/models/db';
-import userRouter from './src/routes/userRouter';
-import courseRouter from './src/routes/courseRouter';
+const express = require('express');
+const bodyParser = require('body-parser');
+const sequelize = require('./models/index.js'); 
 
+// const userRouter = require('./src/routes/userRouter.js');
 
 const app = express();
-const port = 8000;
+const PORT = process.env.PORT || 8000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }));
 
-//define routes
-app.use('/api/user', userRouter);
-app.use('/api/course', courseRouter);
+// Define routes
+// app.use('/api/user', userRouter);
+// app.use('/api/course', courseRouter);
 
+(async () => {
+  try {
+    await sequelize.sync();
+    console.log('Database synchronized');
 
-app.listen(port, () => {
-  connectDB();
-  console.log(`Server listening at http://localhost:${port}`);
-});
-
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+    
+  } catch (error) {
+    console.error('Error syncing database:', error);
+  }
+})();
