@@ -1,22 +1,29 @@
-import User from '../models/user.js';
 import bcrypt from 'bcrypt';
+import User from '../models/user.js';
+import {generateVerificationToken} from '../helper/tokenGenerator.js'
+import sendVerificationEmail from '../services/sendVerificationEmail.js';
 
 
 // Create a new user
 export const createUser = async (req, res) => {
   try {
-    const { password, ...otherFields } = req.body;
+    const { password, email, ...otherFields } = req.body;
     
     // Generate a salt with specified rounds
     const salt = await bcrypt.genSalt(10);
 
     // Hash the password with the generated salt
     const hashedPassword = await bcrypt.hash(password, salt);
-    
-    const newUser = await User.create({ password: hashedPassword, ...otherFields });
 
-    // Remove password field from the returned user object
-    const { password: _, ...userWithoutPassword } = newUser.toObject();
+    const verificationToken = generateVerificationToken();
+
+    const newUser = await User.create({ email, password: hashedPassword, verificationToken, ...otherFields });
+
+    await sendVerificationEmail(newUser.email, verificationToken);
+
+    // Remove password and token field from the returned user object
+    const { password: passwordDiscard, verificationToken: tokenDiscard, ...userWithoutPassword } = newUser.toObject();
+
     res.status(201).json(userWithoutPassword);
   } catch (error) {
     res.status(500).json({ message: error.message });
