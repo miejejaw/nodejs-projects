@@ -34,13 +34,13 @@ export const loginUser = async (req, res) => {
 
     const { _id: userId, role } = user;
 
-    const accessToken = generateAccessToken(userId, username, role); // Include username here
-    const refreshToken = generateRefreshToken(userId, username, role); // Include username here
+    const accessToken = generateAccessToken(userId, username, role); 
+    const refreshToken = generateRefreshToken(userId, username, role); 
 
     res.cookie('accessToken', accessToken, { httpOnly: true });
     res.cookie('refreshToken', refreshToken, { httpOnly: true });
 
-    res.json({ username: user.username, userId });
+    res.json({ username: user.username, userId, role });
 
   } catch (error) {
     console.error('Error logging in:', error);
@@ -59,15 +59,15 @@ export const refreshAccessToken = (req, res) => {
       return res.status(403).json({ message: 'Forbidden: Invalid refresh token' });
     }
 
-    const accessToken = generateAccessToken(user.userId, user.username, user.role); // Include username here
+    const accessToken = generateAccessToken(user.userId, user.username, user.role); 
     
     res.cookie('accessToken', accessToken, { httpOnly: true });
-    res.json({ username: user.username, userId: user.userId });
+    res.json({ username: user.username, userId: user.userId, role: user.role });
   });
 };
 
 export const logoutUser = (req, res) => {
   res.clearCookie('accessToken'); 
   res.clearCookie('refreshToken'); 
-  res.json({ message: 'Logout successful' });
+  res.status(204).json({ message: 'Logout successful' });
 };
