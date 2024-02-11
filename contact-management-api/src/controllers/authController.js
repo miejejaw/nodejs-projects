@@ -18,6 +18,7 @@ const generateRefreshToken = (userId, username, role) => {
   return jwt.sign({ userId, username, role }, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRATION });
 };
 
+
 export const loginUser = async (req, res) => {
   const { username, password } = req.body;
 
@@ -70,4 +71,25 @@ export const logoutUser = (req, res) => {
   res.clearCookie('accessToken'); 
   res.clearCookie('refreshToken'); 
   res.status(204).json({ message: 'Logout successful' });
+};
+
+
+export const verifyEmail = async (req, res) => {
+  const { token } = req.params;
+  try {
+    const user = await User.findOne({ verificationToken: token });
+    
+    if (!user || user.isVerified) {
+      return res.status(400).json({ message: 'Invalid or expired verification token.' });
+    }
+    
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+
+    res.status(200).json({ message: 'Email verification successful.' });
+  } catch (error) {
+    console.error('Error verifying email:', error);
+    res.status(500).json({ message: 'An error occurred while verifying email.' });
+  }
 };
