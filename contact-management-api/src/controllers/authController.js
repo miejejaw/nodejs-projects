@@ -1,22 +1,12 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import User from '../models/user.js';
 import dotenv from 'dotenv';
+import User from '../models/user.js';
+import {generateAccessToken, generateRefreshToken} from '../utils/tokenGenerator.js'
 
 dotenv.config();
 
-const SECRET_KEY = process.env.SECRET_KEY;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
-const ACCESS_TOKEN_EXPIRATION = process.env.ACCESS_TOKEN_EXPIRATION;
-const REFRESH_TOKEN_EXPIRATION = process.env.REFRESH_TOKEN_EXPIRATION;
-
-const generateAccessToken = (userId, username, role) => {
-  return jwt.sign({ userId, username, role }, SECRET_KEY, { expiresIn: ACCESS_TOKEN_EXPIRATION });
-};
-
-const generateRefreshToken = (userId, username, role) => {
-  return jwt.sign({ userId, username, role }, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRATION });
-};
 
 
 export const loginUser = async (req, res) => {
@@ -73,7 +63,6 @@ export const logoutUser = (req, res) => {
   res.status(204).json({ message: 'Logout successful' });
 };
 
-
 export const verifyEmail = async (req, res) => {
   const { token } = req.params;
   try {
@@ -93,3 +82,5 @@ export const verifyEmail = async (req, res) => {
     res.status(500).json({ message: 'An error occurred while verifying email.' });
   }
 };
+
+

@@ -1,10 +1,20 @@
 import express from 'express';
-import { loginUser, refreshAccessToken, logoutUser, verifyEmail } from '../controllers/authController.js';
+import * as authController from '../controllers/authController.js';
+import limiter from '../middlewares/rateLimitMiddleware.js';
+// import bruteforce from '../middlewares/accountLockoutMiddleware.js';
+
 
 const router = express.Router();
+// Apply Rate Limiting Middleware
+router.use(limiter);
 
-router.get('/verify-email/:token', verifyEmail);
-router.post('/login', loginUser);
-router.post('/refresh-token', refreshAccessToken);
-router.post('/logout', logoutUser);
+// Apply Account Lockout Middleware
+// router.post('/login', bruteforce.prevent, loginUser);
+
+router.post('/login', authController.loginUser);
+router.get('/verify-email/:token', authController.verifyEmail);
+router.post('/refresh-token', authController.refreshAccessToken);
+router.post('/logout', authController.logoutUser);
+
+
 export default router;
